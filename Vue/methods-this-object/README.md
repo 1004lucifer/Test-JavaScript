@@ -1,4 +1,4 @@
-# vuejs_es6_function
+# Vue.js의 methods 함수 내에서의 this 객체 확인
 
 ## Project setup
 ```
