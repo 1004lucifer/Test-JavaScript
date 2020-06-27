@@ -37,6 +37,7 @@ export default {
     this.test5();
     this.test6();
     this.test7();
+    this.test8();
   },
   methods: {
     // 일반적인 함수 생성
@@ -99,6 +100,18 @@ export default {
           // eslint-disable-next-line no-debugger
           debugger;
           console.log(res, this);
+        }
+      });
+    },
+    test8: function() {
+      // this 객체를 복사
+      var context = this;
+      this.callbackTest({
+        data: this.testData2,
+        callback: function(res) {
+          // eslint-disable-next-line no-debugger
+          debugger;
+          console.log(res, context);
         }
       });
     },

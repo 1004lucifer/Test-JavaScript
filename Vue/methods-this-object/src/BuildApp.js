@@ -240,6 +240,14 @@
                                 console.log(e, t)
                             }
                         })
+                    },
+                    test8: function () {
+                        var t = this;
+                        this.callbackTest({
+                            data: this.testData2, callback: function (e) {
+                                console.log(e, t)
+                            }
+                        })
                     }
                 }
             }, g = b, _ = (r("034f"), Object(p["a"])(g, o, s, !1, null, null, null)), d = _.exports;
