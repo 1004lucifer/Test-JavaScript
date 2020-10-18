@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Leaflet Quick Start Guide</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+          integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+          crossorigin=""></script>
+
+  <style type="text/css">
+    html,body { width:100%; height:100%; margin:0; padding:0; }
+    #mapid { width:100%; height:100%; }
+  </style>
+
+</head>
+<body>
+
+<div id="mapid"></div>
+
+<script type="text/javascript">
+  var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+
+  L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox/streets-v11',
+    tileSize: 512,
+    zoomOffset: -1,
+    // accessToken: 'your.mapbox.access.token' // mapbox 가입 후 발급되는 토큰 입력
+    accessToken: 'pk.eyJ1IjoiaHdhbjM0NzMiLCJhIjoiY2tnZXQ2eWxtMDRsaDJ4cXlkdm15Z3VicyJ9.THG49L6uz_jCTTK9hFtsXA'
+  }).addTo(mymap);
+
+  var marker = L.marker([51.5, -0.09]).addTo(mymap);
+
+  var circle = L.circle([51.508, -0.11], {
+    color: 'red',
+    fillColor: '#f03',
+    fillOpacity: 0.5,
+    radius: 500
+  }).addTo(mymap);
+
+  var polygon = L.polygon([
+    [51.509, -0.08],
+    [51.503, -0.06],
+    [51.51, -0.047]
+  ]).addTo(mymap);
+
+  /**
+   * 팝업 (마커, 원, 다각형)
+   */
+  marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
+  circle.bindPopup("I am a circle.");
+  polygon.bindPopup("I am a polygon.");
+
+  /**
+   * 추가 팝업
+   */
+  var popup = L.popup()
+    .setLatLng([51.5, -0.09])
+    .setContent("I am a standalone popup.")
+    // .openOn(mymap); // 기존의 팝업을 모두 닫고 해당 팝업 노출
+    .addTo(mymap); // 기존 팝업을 그대로 보여주면서 해당 팝업 노출
+
+</script>
+</body>
+</html>
