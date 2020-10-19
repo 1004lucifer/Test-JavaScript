@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Custom Icons Tutorial - Leaflet</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+          integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+          crossorigin=""></script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #map { width: 600px; height: 400px; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script>
+  /**
+   * [Class(클래스) 관련 설명]
+   *
+   * Leaflet 공식 제공 클래스 생성방법에 2가지 종류가 있다.
+   *
+   *  1. new 클래스명
+   *   - ex: new L.Icon(options);
+   *
+   *  2. 소문자 단축명
+   *   - ex: L.icon(options);
+   *   - 아래와 같이 소문자명 메소드가 래핑되어 있다.
+   *      L.icon = function (options) {
+   *          return new L.Icon(options);
+   *      };
+   */
+
+  // 맵 객체 생성
+  var map = L.map('map').setView([51.5, -0.09], 13);
+
+  // 타일레이어 연동
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  /**
+   * (공통점이 많은 아이콘을 여러개 만들어야 하는경우)
+   * L.Icon을 상속받는 클래스를 생성한다.
+   * options 내부에 있는 속성은 해당 클래스를 생성 시 공통적으로 가지고 있는 프로퍼티가 된다.
+   * 참고: https://leafletjs.com/reference-1.7.1.html#class
+   */
+  var LeafIcon = L.Icon.extend({
+    options: {
+      shadowUrl: 'https://leafletjs.com/examples/custom-icons/leaf-shadow.png',
+      iconSize: [38, 95],
+      shadowSize: [50, 64],
+      iconAnchor: [22, 94],
+      shadowAnchor: [4, 62],
+      popupAnchor: [-3, -76]
+    }
+  });
+
+  /**
+   * 확장한 LeafIcon 객체 생성
+   */
+  var greenIcon = new LeafIcon({iconUrl: 'https://leafletjs.com/examples/custom-icons/leaf-green.png'}),
+    redIcon = new LeafIcon({iconUrl: 'https://leafletjs.com/examples/custom-icons/leaf-red.png'}),
+    orangeIcon = new LeafIcon({iconUrl: 'https://leafletjs.com/examples/custom-icons/leaf-orange.png'});
+
+  /**
+   * 각각의 마커에 해당 아이콘 매핑
+   */
+  L.marker([51.5, -0.09], {icon: greenIcon}).bindPopup("I am a green leaf.").addTo(map);
+  L.marker([51.495, -0.083], {icon: redIcon}).bindPopup("I am a red leaf.").addTo(map);
+  L.marker([51.49, -0.1], {icon: orangeIcon}).bindPopup("I am an orange leaf.").addTo(map);
+
+</script>
+
+
+</body>
+</html>
