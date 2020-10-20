@@ -42,6 +42,12 @@
     zoomOffset: -1
   }).addTo(map);
 
+  /**
+   * GeoJSON 레이어에 추가전 각 feature 에서 호출
+   * 여기서는 각 feature를 클릭 시 팝업을 노출하도록 설정
+   * @param feature
+   * @param layer
+   */
   function onEachFeature(feature, layer) {
     var popupContent = "<p>I started out as a GeoJSON " +
       feature.geometry.type + ", but now I'm a Leaflet vector!</p>";
@@ -51,12 +57,15 @@
     layer.bindPopup(popupContent);
   }
 
+  /**
+   * bicycleRental, compus GeoJSON 레이어 추가
+   */
   L.geoJSON([bicycleRental, campus], {
-    style: function (feature) {
+    style: function (feature) { // 각 feature의 스타일 적용
       return feature.properties && feature.properties.style;
     },
-    onEachFeature: onEachFeature,
-    pointToLayer: function (feature, latlng) {
+    onEachFeature: onEachFeature, // 클릭 시 팝업 노출
+    pointToLayer: function (feature, latlng) { // point(bicycleRental)는 원을 그려준다.
       return L.circleMarker(latlng, {
         radius: 8,
         fillColor: "#ff7800",
@@ -68,7 +77,11 @@
     }
   }).addTo(map);
 
+  /**
+   * freeBus GeoJSON 레이어 추가
+   */
   L.geoJSON(freeBus, {
+    // 버스노선이 3개가 있지만 2개만 필터로 인해 노출됨
     filter: function (feature, layer) {
       if (feature.properties) {
         // If the property "underConstruction" exists and is true, return false (don't render features under construction)
@@ -76,9 +89,12 @@
       }
       return false;
     },
-    onEachFeature: onEachFeature
+    onEachFeature: onEachFeature // 클릭 시 팝업 노출
   }).addTo(map);
 
+  /**
+   * baseballIcon 속성
+   */
   var baseballIcon = L.icon({
     iconUrl: 'https://leafletjs.com/examples/geojson/baseball-marker.png',
     iconSize: [32, 37],
@@ -86,11 +102,15 @@
     popupAnchor: [0, -28]
   });
 
+  /**
+   * coorsField GeoJSON 레이어 추가
+   */
   var coorsLayer = L.geoJSON(coorsField, {
+    // 일반적인 벡터 마커가 아닌 이미지가 노출되는 마커
     pointToLayer: function (feature, latlng) {
       return L.marker(latlng, {icon: baseballIcon});
     },
-    onEachFeature: onEachFeature
+    onEachFeature: onEachFeature // 클릭 시 팝업 노출
   }).addTo(map);
 </script>
 </body>
