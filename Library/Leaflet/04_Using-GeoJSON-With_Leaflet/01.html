@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GeoJSON tutorial - Leaflet</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #map { width: 600px; height: 400px; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script>
+  var map = L.map('map').setView([39.74739, -105], 13);
+
+  L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+    maxZoom: 18,
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+      '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+      'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    id: 'mapbox/light-v9',
+    tileSize: 512,
+    zoomOffset: -1
+  }).addTo(map);
+
+  /**
+   * [설명]
+   *
+   * GEOJSON 설명
+   *   GeoJSON은 다양한 지리 데이터 구조를 인코딩하기위한 형식이다.
+   *   GeoJSON 객체는 공간영역(Geometry), 공간경계(Feature), 기능리스트(FeattureCollection)을 나타낼 수 있다.
+   *   GeoJSON은 Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon, GeometryCollection에 대한 geometry 타입을 지원한다.
+   *   GeoJSON의 Feature에는 Geometry객체, 추가속성이 포함되고, FeatureCollection 에는 기능 리스트들이 포함되어 있다.
+   *
+   * Leaflet은 위의 모든 GeoJSON 타입을 지원하며, properties를 셋팅하고 features를 기술할 시 Features/FeatureCollection를 가장 잘 작동한다.
+   */
+
+  /**
+   * GeoJSON의 샘플 예제
+   */
+  var geojsonFeature = {
+    "type": "Feature",
+    "properties": {
+      "name": "Coors Field",
+      "amenity": "Baseball Stadium",
+      "popupContent": "This is where the Rockies play!"
+    },
+    "geometry": {
+      "type": "Point",
+      "coordinates": [-104.99404, 39.75621]
+    }
+  };
+
+  /**
+   * GeoJSON 객체는 GeoJSON레이어를 통해 추가할 수 있다.
+   */
+  L.geoJSON(geojsonFeature).addTo(map);
+
+  /**
+   * 빈 GeoJSON레이어를 만들고나서 더 많은 feature를 추가할 수 있다.
+   * 위 코드와 같은 기능을 한다.
+   */
+  // var myLayer = L.geoJSON().addTo(map);
+  // myLayer.addData(geojsonFeature);
+
+</script>
+</body>
+</html>
