@@ -3,15 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Leaflet Quick Start Guide</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-        crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-          integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-          crossorigin=""></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
   <style type="text/css">
-    html,body { width:100%; height:100%; margin:0; padding:0; }
-    #map { width:100%; height:100%; }
+    html, body { width: 100%; height: 100%; margin: 0; padding: 0; }
+    #map { width: 100%; height: 100%; }
   </style>
 </head>
 <body>
@@ -19,75 +15,75 @@
 <div id="map"></div>
 
 <script type="text/javascript">
-    /**
-     * 타일레이어에서 사용할 속성
-     */
-    var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-        '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+  /**
+   * 타일레이어에서 사용할 속성
+   */
+  var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+    '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+    'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
 
-    /**
-     * [레이어 그룹]
-     *
-     * 코드에서 하나로 처리하기 위해 그룹으로 결합하려는 여러개의 레이어를 생성 후 LayerGroup 에 넣어준다.
-     */
-    var littleton = L.marker([39.61, -105.02]).bindPopup('This is Littleton, CO.'),
-        denver    = L.marker([39.74, -104.99]).bindPopup('This is Denver, CO.'),
-        aurora    = L.marker([39.73, -104.8]).bindPopup('This is Aurora, CO.'),
-        golden    = L.marker([39.77, -105.23]).bindPopup('This is Golden, CO.');
-    var cities = L.layerGroup([littleton, denver, aurora, golden]);
+  /**
+   * [레이어 그룹]
+   *
+   * 코드에서 하나로 처리하기 위해 그룹으로 결합하려는 여러개의 레이어를 생성 후 LayerGroup 에 넣어준다.
+   */
+  var littleton = L.marker([39.61, -105.02]).bindPopup('This is Littleton, CO.'),
+    denver = L.marker([39.74, -104.99]).bindPopup('This is Denver, CO.'),
+    aurora = L.marker([39.73, -104.8]).bindPopup('This is Aurora, CO.'),
+    golden = L.marker([39.77, -105.23]).bindPopup('This is Golden, CO.');
+  var cities = L.layerGroup([littleton, denver, aurora, golden]);
 
-    /**
-     * [레이어 그룹]
-     *
-     * 아래의 코드는 위 코드와 동일한 기능을 한다.
-     */
-    // var cities = L.layerGroup();
-    // L.marker([39.61, -105.02]).bindPopup('This is Littleton, CO.').addTo(cities);
-    // L.marker([39.74, -104.99]).bindPopup('This is Denver, CO.').addTo(cities);
-    // L.marker([39.73, -104.8]).bindPopup('This is Aurora, CO.').addTo(cities);
-    // L.marker([39.77, -105.23]).bindPopup('This is Golden, CO.').addTo(cities);
+  /**
+   * [레이어 그룹]
+   *
+   * 아래의 코드는 위 코드와 동일한 기능을 한다.
+   */
+  // var cities = L.layerGroup();
+  // L.marker([39.61, -105.02]).bindPopup('This is Littleton, CO.').addTo(cities);
+  // L.marker([39.74, -104.99]).bindPopup('This is Denver, CO.').addTo(cities);
+  // L.marker([39.73, -104.8]).bindPopup('This is Aurora, CO.').addTo(cities);
+  // L.marker([39.77, -105.23]).bindPopup('This is Golden, CO.').addTo(cities);
 
-    /**
-     * 사용할 타일레이어 생성
-     */
-    var grayscale = L.tileLayer(mbUrl, {id: 'mapbox/light-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr}),
-        streets   = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
+  /**
+   * 사용할 타일레이어 생성
+   */
+  var grayscale = L.tileLayer(mbUrl, {id: 'mapbox/light-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr}),
+    streets = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
 
-    /**
-     * 맵 생성
-     *
-     * 좌표: [39.73, -104.99]
-     * 줌 레벨: 10
-     * 레이어: (grayscale)타일레이어, (cities)마커 레이어그룹
-     */
-    var map = L.map('map', {
-        center: [39.73, -104.99],
-        zoom: 10,
-        layers: [grayscale, cities] // 디폴트로 보여질 레이어
-    });
+  /**
+   * 맵 생성
+   *
+   * 좌표: [39.73, -104.99]
+   * 줌 레벨: 10
+   * 레이어: (grayscale)타일레이어, (cities)마커 레이어그룹
+   */
+  var map = L.map('map', {
+    center: [39.73, -104.99],
+    zoom: 10,
+    layers: [grayscale, cities] // 디폴트로 보여질 레이어
+  });
 
-    /**
-     * [레이어 컨트롤]
-     *
-     * L.control.layers 메소드를 이용해 baseLayers, overlays 레이어 추가 후
-     * 지도에 해당 Layer 컨트롤을 추가함.
-     *
-     * baseLayers: 지도에서 하나만 보여질수 있는 레이어 (라디오 버튼으로 보여질 레이어 선택)
-     * overlays: 다른 모든 항목 위에 보여질 수 있는 레이어 (체크박스로 특정 레이어 노출여부를 선택)
-     *
-     * L.control.layers 사용 시 첫번째 인수를 전달하지 않으려면 null 값을 넣어야 하며,
-     * 두번째 인수는 생략 가능함.
-     */
-    var baseLayers = {
-        "Grayscale": grayscale,
-        "Streets": streets
-    };
-    var overlays = {
-        "Cities": cities
-    };
-    L.control.layers(baseLayers, overlays).addTo(map);
+  /**
+   * [레이어 컨트롤]
+   *
+   * L.control.layers 메소드를 이용해 baseLayers, overlays 레이어 추가 후
+   * 지도에 해당 Layer 컨트롤을 추가함.
+   *
+   * baseLayers: 지도에서 하나만 보여질수 있는 레이어 (라디오 버튼으로 보여질 레이어 선택)
+   * overlays: 다른 모든 항목 위에 보여질 수 있는 레이어 (체크박스로 특정 레이어 노출여부를 선택)
+   *
+   * L.control.layers 사용 시 첫번째 인수를 전달하지 않으려면 null 값을 넣어야 하며,
+   * 두번째 인수는 생략 가능함.
+   */
+  var baseLayers = {
+    "Grayscale": grayscale,
+    "Streets": streets
+  };
+  var overlays = {
+    "Cities": cities
+  };
+  L.control.layers(baseLayers, overlays).addTo(map);
 </script>
 </body>
 </html>
