@@ -31,7 +31,7 @@
   }).addTo(map);
 
   /**
-   * GeoJSON의 density 값에 따른 색상 변화값 리턴
+   * GeoJSON의 인구밀도(density) 값에 따른 색상 변화값 리턴
    */
   function getColor(d) {
     return d > 1000 ? '#800026' :
@@ -63,35 +63,6 @@
    */
   L.geoJson(statesData, {style: style}).addTo(map);
 
-  /**
-   * 아래는 us-states.js 파일의 statesData 값의 일부
-   *{
-   *  "type": "Feature",
-   *  "id": "05",
-   *  "properties": {
-   *    "name": "Arkansas",
-   *    "density": 56.43
-   *  },
-   *  "geometry": {
-   *    "type": "Polygon",
-   *    "coordinates": [
-   *      [
-   *        [
-   *          -94.473842,
-   *          36.501861
-   *        ],
-   *
-   *        ...
-   *
-   *        [
-   *          -94.473842,
-   *          36.501861
-   *        ]
-   *      ]
-   *    ]
-   *  }
-   *},
-   */
 </script>
 </body>
 </html>
