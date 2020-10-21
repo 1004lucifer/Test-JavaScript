@@ -28,6 +28,8 @@
         mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
 
     /**
+     * [레이어 그룹]
+     *
      * 코드에서 하나로 처리하기 위해 그룹으로 결합하려는 여러개의 레이어를 생성 후 LayerGroup 에 넣어준다.
      */
     var littleton = L.marker([39.61, -105.02]).bindPopup('This is Littleton, CO.'),
@@ -37,6 +39,8 @@
     var cities = L.layerGroup([littleton, denver, aurora, golden]);
 
     /**
+     * [레이어 그룹]
+     *
      * 아래의 코드는 위 코드와 동일한 기능을 한다.
      */
     // var cities = L.layerGroup();
@@ -65,6 +69,8 @@
     });
 
     /**
+     * [레이어 컨트롤]
+     *
      * L.control.layers 메소드를 이용해 baseLayers, overlays 레이어 추가 후
      * 지도에 해당 Layer 컨트롤을 추가함.
      *
