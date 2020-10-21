@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Choropleth Tutorial - Leaflet</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #map { width: 600px; height: 400px; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script type="text/javascript" src="us-states.js"></script>
+
+<script type="text/javascript">
+  var map = L.map('map').setView([37.8, -96], 4);
+
+  L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+    maxZoom: 18,
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+      '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+      'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    id: 'mapbox/light-v9',
+    tileSize: 512,
+    zoomOffset: -1
+  }).addTo(map);
+
+  function getColor(d) {
+    return d > 1000 ? '#800026' :
+           d > 500  ? '#BD0026' :
+           d > 200  ? '#E31A1C' :
+           d > 100  ? '#FC4E2A' :
+           d > 50   ? '#FD8D3C' :
+           d > 20   ? '#FEB24C' :
+           d > 10   ? '#FED976' :
+                      '#FFEDA0';
+  }
+
+  function style(feature) {
+    return {
+      fillColor: getColor(feature.properties.density),
+      weight: 2,
+      opacity: 1,
+      color: 'white',
+      dashArray: '3',
+      fillOpacity: 0.7
+    };
+  }
+
+  /**
+   * GeoJSON 전역 객체
+   */
+  var geojson;
+
+  /**
+   * feature(해당 지역)에 마우스 오버 시 사용할 스타일 하이라이트 기능
+   */
+  function highlightFeature(e) {
+    var layer = e.target;
+    layer.setStyle({
+      weight: 5,
+      color: '#666',
+      dashArray: '',
+      fillOpacity: 0.7
+    });
+    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+      layer.bringToFront(); // 해당 레이어를 다른 레이어보다 위로 가져온다.
+    }
+  }
+
+  /**
+   * feature에 마우스 아웃 시 사용할 스타일 리셋
+   */
+  function resetHighlight(e) {
+    geojson.resetStyle(e.target);
+  }
+
+  /**
+   * feature 클릭 시 해당 위치로 Zoom Level을 맞춘다.
+   */
+  function zoomToFeature(e) {
+    map.fitBounds(e.target.getBounds());
+  }
+
+  /**
+   * onEachFeature 옵션은 GeoJSON 레이어에 각 feature가 추가되기전에 호출되는 함수
+   */
+  function onEachFeature(feature, layer) {
+    layer.on({
+      mouseover: highlightFeature, // 마우스 오버 시 스타일 하이라이트
+      mouseout: resetHighlight, // 마우스 아웃 시 스타일 리셋
+      click: zoomToFeature // 클릭 시 해당지역 줌 레벨 피팅
+    });
+  }
+
+  /**
+   * GeoJSON 레이어 생성 및 전역변수에 할당
+   */
+  geojson = L.geoJson(statesData, {
+    style: style, // 전역 스타일
+    onEachFeature: onEachFeature // 각각의 feature 레이어에 이벤트 설정
+  }).addTo(map);
+
+</script>
+</body>
+</html>
