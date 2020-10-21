@@ -81,7 +81,7 @@
   }
 
   /**
-   * feature 클릭 시 해당 위치로 Zoom Level을 맞춘다.
+   * feature 클릭 시 해당 (feature)지도의 직사각형 영역에 맞게 줌을 자동으로 계산하여 보여준다.
    */
   function zoomToFeature(e) {
     map.fitBounds(e.target.getBounds());
