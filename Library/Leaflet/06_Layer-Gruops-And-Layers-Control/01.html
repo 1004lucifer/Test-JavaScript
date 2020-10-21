@@ -3,23 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <title>Leaflet Quick Start Guide</title>
-
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
         integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
         crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
           integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
           crossorigin=""></script>
-
   <style type="text/css">
     html,body { width:100%; height:100%; margin:0; padding:0; }
     #map { width:100%; height:100%; }
   </style>
-
 </head>
 <body>
 
-<!-- 맵을 넣을 div 요소 -->
 <div id="map"></div>
 
 <script type="text/javascript">
@@ -69,12 +65,13 @@
     });
 
     /**
-     * 레이어 컨트롤 패널 기능 추가
+     * L.control.layers 메소드를 이용해 baseLayers, overlays 레이어 추가 후
+     * 지도에 해당 컨트롤을 추가함.
      *
-     * baseLaysers: 지도에서 하나만 보여질수 있는 레이어 (라디오 버튼으로 보여질 레이어 선택)
+     * baseLayers: 지도에서 하나만 보여질수 있는 레이어 (라디오 버튼으로 보여질 레이어 선택)
      * overlays: 다른 모든 항목 위에 보여질 수 있는 레이어 (체크박스로 특정 레이어 노출여부를 선택)
      *
-     * L.control.laysers 사용 시 첫번째 인수를 전달하지 않으려면 null 값을 넣어야 하며,
+     * L.control.layers 사용 시 첫번째 인수를 전달하지 않으려면 null 값을 넣어야 하며,
      * 두번째 인수는 생략 가능함.
      */
     var baseLayers = {
@@ -85,7 +82,6 @@
         "Cities": cities
     };
     L.control.layers(baseLayers, overlays).addTo(map);
-
 </script>
 </body>
 </html>
