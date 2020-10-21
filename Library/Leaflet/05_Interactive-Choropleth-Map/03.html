@@ -68,6 +68,7 @@
       dashArray: '',
       fillOpacity: 0.7
     });
+    // IE, Opera, Edge 에서는 문제가 있어 bringToFront 기능을 추가하지 않는다.
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
       layer.bringToFront(); // 해당 레이어를 다른 레이어보다 위로 가져온다.
     }
