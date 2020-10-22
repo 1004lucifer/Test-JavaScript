@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Zoom Levels Tutorial - Leaflet</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #map { width: 600px; height: 400px; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script>
+  var map = L.map('map', {
+    minZoom: 0,
+    maxZoom: 1,
+    dragging: false // 드래그 사용 못하도록 수정
+  });
+
+  var cartodbAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>';
+
+  var positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+    attribution: cartodbAttribution
+  }).addTo(map);
+
+  /**
+   * 지도에 축척비율 컨트롤레이어 추가
+   */
+  L.control.scale({maxWidth: 150}).addTo(map);
+
+  /**
+   * 2초마다 지도의 위치를 변경한다.
+   *
+   * PS.
+   * Zoom이 변경되지 않았음에도 지구의 윗부분과 아래의 부분에 대한 축척이 다른걸 알 수 있다.
+   * 현재는 Zoom 레벨이 0이다보니 축척의 차이가 크지만 Zoom 레벨이 높은경우 축척이 크게 차이나지 않는다.
+   */
+  setInterval(function(){
+    map.setView([0, 0], 0, {duration: 1, animate: true});
+    setTimeout(function(){
+      map.setView([60, 0], 0, {duration: 1, animate: true});
+    }, 2000);
+  }, 4000);
+
+  map.setView([0, 0], 0);
+</script>
+</body>
+</html>
