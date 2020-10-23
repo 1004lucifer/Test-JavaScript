@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WMS example - Leaflet</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <style>
+    html, body { height: 100%; margin: 0;
+    }
+    #map { width: 600px; height: 400px; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script type="text/javascript">
+
+  /**
+   * [TMS in Leaflet]
+   *
+   * Leaflet은 TMS서비스를 공식적으로 지원하지 않지만
+   * tile 이름구조는 공통 L.TileLayer 이름체계와 유사하며 평범한 TMS서비스를 표시할 수 있다.
+   *
+   * 아래와 같은 엔드포인트가 있는 TMS서버를 고려해보자.
+   * http://base_url/tms/1.0.0
+   *
+   * TMS 및 TMS 사양에 대한 MapCache 도움말을 확인하면 TMS의 지도 타일 URL이 다음과 같다.
+   * http://base_url/tms/1.0.0/ {tileset} / {z} / {x} / {y} .png
+   *
+   * L.TileLayer로 TMS서비스를 사용하려면, 사용가능한 tileset에 대해 기능문서를 체크하여 아래와 같은 base URL을 빌드할 수 있다.
+   * (우리의 경우 http://base_url/tms/1.0.0로 기본 엔드포인트가 같을때)
+   * http://base_url/tms/1.0.0/{example_layer}@png/{z}/{x}/{y}.png
+   *
+   * 아래와 같이 레이어를 인스턴스화 할때 tms:true 옵션을 사용해라.
+   * var tms_example = L.tileLayer('http://base_url/tms/1.0.0/example_layer@png/{z}/{x}/{y}.png', {
+   *     tms: true
+   * }).addTo(map);
+   *
+   * Leaflet 1.0의 새로운 기능은 tms:true 옵션 대신 URL에 {-y}를 사용할 수 있다.
+   * var layer = L.tileLayer('http://base_url/tms/1.0.0/tileset/{z}/{x}/{-y}.png');
+   *
+   * (Leaflet 0.7에서) tms:true 옵션이나 (Leaflet 1.0에서) {-y}는
+   * 일반적인 L.TileLayer 좌표 원점이 왼쪽 상단 모서리에 있으므로 Y좌표가 내려가기 때문에
+   * 필요한 옵션과 기능이다.
+   * TMS에서 좌표의 원점은 왼쪽 하단 모서리가 되어 Y좌표가 위로 올라가게 된다.
+   *
+   * Y좌표와 tilesets의 발견의 차이 외에도 TMS서비스는 L.TileLayer가 기대하는 방법으로 정확하게 tile을 제공한다.
+   */
+
+</script>
+</body>
+</html>

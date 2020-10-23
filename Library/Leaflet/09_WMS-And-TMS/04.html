@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WMS example - Leaflet</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <style>
+    html, body { height: 100%; margin: 0;
+    }
+    #map { width: 600px; height: 400px; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script type="text/javascript">
+
+  /**
+   * [WMS서비스의 GIS사용자를 위한 참고사항]
+   *
+   * GIS관점에서 보면 Leaflet의 WMS처리는 상당히 기본적이며 GetCapabilities / GetFeatureInfo / legend의 지원이 없다.
+   *
+   * T.TileLayer.WMS는 추가적인 옵션이 있는데 Leaflet API Document에서 찾아볼 수 있다.
+   * API Document에 기술되지 않은 모든 옵션은 getImage URL의 WMS서버로 전송된다.
+   *
+   * 또한 Leaflet은 CRS:3857, CRS:3395 and CRS:4326 등 매우 적은수의 좌표시스템을 지원한다. (document의 L.CRS 참고)
+   * WMS서비스가 해당 좌표계의 이미지를 제공하지 않는경우, Proj4Leaflet을 사용하여 Leaflet의 다른 좌표시스템을 사용해야 할 수 있다.
+   * 그외에는 지도를 초기화 할때 올바를 CRS를 사용하면 모든 추가된 WMS layers는 사용가능하다.
+   */
+
+  var map = L.map('map', {
+    center: [0, 0],
+    zoom: 1,
+    crs: L.CRS.EPSG4326
+  });
+
+  var wmsLayer = L.tileLayer.wms('http://ows.mundialis.de/services/service?', {
+    layers: 'TOPO-OSM-WMS'
+  }).addTo(map);
+
+</script>
+</body>
+</html>
