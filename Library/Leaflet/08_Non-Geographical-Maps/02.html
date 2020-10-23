@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CRS.Simple example - Leaflet</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #map { width: 600px; height: 400px; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script>
+  /**
+   * [CRS.Simple map의 일반적인 문제점]
+   *
+   * Leaflet CRS의 기본값은 CRS.Earth이며, 360도의 경도는 256가로픽셀과 매핑되고 약170도 위도는 256세로픽셀과 매핑된다.
+   * (결국 정사각형이며, 줌 레벨 0인경우에 해당된다.)
+   * CRS에서 하나의 수평지도 단위는 하나의 수평픽셀에 매핑되며, 수직부분도 마찬가지다.
+   * map의 전체 부분은 1000x1000 픽셀크기이며, 따라서 우리의 HTML 컨테이너에 들어맞지 않는다.
+   * 다행히 minZoom 값을 0 이하로 설정할수 있다.
+   */
+
+  var map = L.map('map', {
+    crs: L.CRS.Simple,
+    minZoom: -5
+  });
+
+  var bounds = [[0,0], [1000,1000]];
+  var image = L.imageOverlay('uqm_map_full.png', bounds).addTo(map);
+
+  map.fitBounds(bounds);
+
+</script>
+</body>
+</html>

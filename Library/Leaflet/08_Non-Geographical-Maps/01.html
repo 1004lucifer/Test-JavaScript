@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CRS.Simple example - Leaflet</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #map { width: 600px; height: 400px; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script>
+  /**
+   * [CRS 설명]
+   * CRS는 좌표 참조 시스템을 의미하며, 좌표 벡터에서 좌표가 무엇을 의미하는지 설명하기 위해 지리학자들이 사용하는 용어다.
+   * 예를 들어, [15, 60]은 지구에서 위도 경도를 사용할 경우 인도양의 한 지점을 나타내며,
+   * 또는 태양계 Krueger-Z는 우리의 starmap(uqm_map_full.png)에서 볼 수 있다.
+   */
+
+  /**
+   * Leaflet map은 CRS를 하나 가지고 있으며, map을 생성할때 변경이 가능하다. (CRS는 하나만 가질 수 있다)
+   * 이 게임맵 예제에서는 CRS.Simple 을 사용할 것이며, 사각형 그리드에 해당한다.
+   */
+  var map = L.map('map', {
+    crs: L.CRS.Simple
+  });
+
+  /**
+   * 위 CRS 작업 후 (startmap)이미지와 대략적인 범위를 L.imageOverlay에 추가할 수 있다.
+   */
+  var bounds = [[0,0], [1000,1000]];
+  var image = L.imageOverlay('uqm_map_full.png', bounds).addTo(map);
+
+  /**
+   * 전체지도를 표시한다.
+   *  - 하지만 fitBounds를 실행하더라도 전체 지도가 보여지지 않는다.
+   */
+  map.fitBounds(bounds);
+
+</script>
+</body>
+</html>

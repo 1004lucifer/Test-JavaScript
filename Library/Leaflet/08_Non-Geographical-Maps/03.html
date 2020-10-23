@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CRS.Simple example - Leaflet</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #map { width: 600px; height: 400px; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script>
+  /**
+   * [Pixels VS Map Units]
+   *
+   * 한가지 일반적인 실수가 있는데, CRS.Simple를 사용할 때 'map units'와 'image pixels'와 같다고 가정하는 것이다.
+   * 이 경우에 지도는 1000x1000 단위(unit)를 커버하지만 이미지는 2315x2315픽셀이다.
+   *
+   * 상황에따라 '1 pixel = 1 map unit' 또는 '64 pixel = 1 map unit' 또는 다른 방법이 요구될 수 있다.
+   * 그리드의 map units에 맞춰서 레이어를 추가하는 식으로 생각해야 한다. (L.ImageOverlays, L.Markers 등등)
+   *
+   * 사실 우리가 사용하고 있는 이미지는 1000개의 map units을 커버하고 있다. (상당한 여백이 있다.)
+   * 0과 1000 사이에 몇개의 픽셀이 있는지 측정하고 추론하면 이 이미지에 대한 올바른 좌표 경계를 알 수 있다.
+   */
+
+  var map = L.map('map', {
+    crs: L.CRS.Simple,
+    minZoom: -5
+  });
+
+  var bounds = [[-26.5,-25], [1021.5,1023]];
+  var image = L.imageOverlay('uqm_map_full.png', bounds).addTo(map);
+
+  /**
+   * 태양계 위치에 마커를 추가
+   */
+  var sol = L.latLng([ 145, 175.2 ]);
+  L.marker(sol).addTo(map);
+  map.setView( [70, 120], 1);
+
+</script>
+</body>
+</html>

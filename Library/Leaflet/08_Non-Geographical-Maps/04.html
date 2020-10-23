@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CRS.Simple example - Leaflet</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #map { width: 600px; height: 400px; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script>
+  /**
+   * [이 LatLng는 당신이 아는 그게 아니다]
+   *
+   * Sol의 좌표가 [175,145] 대신에 [145,175]로 되어있고, map center 또한 이렇게 되어있는것을 눈치 챘을 것이다.
+   * CRS.Simple의 좌표는 [x,y] 대신에 [y,x]를 사용하고 있으며 Leaflet 또한 [lng,lat] 대신에 [lat,lng]를 사용하고 있다.
+   *
+   * [lng,lat] or [lat,lng] or [y,x] or [x,y] 에 대한 논쟁은 새로운게 아니라 명확히 합의된게 없다.
+   * 또한 Leaflet의 L.Coordinate 이름 대신 L.LatLng 라는 클래스명을 사용한 것에 대해서도 합의가 부족하다.
+   *
+   * L.LatLng 라는 이름으로 [y,x] 좌표로 작업하는게 그다지 이해되지 않는다면 쉽게 래퍼를 만들어 사용할 수 있다.
+   */
+
+  var map = L.map('map', {
+    crs: L.CRS.Simple,
+    minZoom: -3
+  });
+
+  /**
+   * L.LatLng 래퍼 xy
+   */
+  var yx = L.latLng;
+  var xy = function(x, y) {
+    if (L.Util.isArray(x)) {    // When doing xy([x, y]);
+      return yx(x[1], x[0]);
+    }
+    return yx(y, x);  // When doing xy(x, y);
+  };
+
+  var bounds = [xy(-25, -26.5), xy(1023, 1021.5)];
+  var image = L.imageOverlay('uqm_map_full.png', bounds).addTo(map);
+
+  /**
+   * 마커 추가
+   */
+  var sol      = xy(175.2, 145.0);
+  var mizar    = xy( 41.6, 130.1);
+  var kruegerZ = xy( 13.4,  56.5);
+  var deneb    = xy(218.7,   8.3);
+  L.marker(     sol).addTo(map).bindPopup(      'Sol');
+  L.marker(   mizar).addTo(map).bindPopup(    'Mizar');
+  L.marker(kruegerZ).addTo(map).bindPopup('Krueger-Z');
+  L.marker(   deneb).addTo(map).bindPopup(    'Deneb');
+
+  /**
+   * (라인)Polyline 생성 후 지도에 추가
+   */
+  var travel = L.polyline([sol, deneb]).addTo(map);
+
+  map.setView(xy(120, 70), 1);
+
+</script>
+</body>
+</html>
