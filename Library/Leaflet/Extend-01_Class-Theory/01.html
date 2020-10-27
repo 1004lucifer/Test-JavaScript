@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leaflet class diagram - Leaflet</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #map { width: 600px; height: 400px; }
+  </style>
+  <style>#map { width: 100vw; height: 100%; }</style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script type="text/javascript">
+  /**
+   *  ************ 이 html 은 정상적으로 수행되지 않는 파일입니다. *********
+   *  [ Leaflet 확장 ]
+   *  Leaflet에는 수백개의 플러그인이 있다. 이는 Leaflet의 기능을 확장하며
+   *  때로는 일반적인 방식으로, 때로는 유스케이스별 방식으로 확장한다.
+   *
+   *  플러그인이 많은 이유는 Leaflet이 확장하기 쉽기 때문이다.
+   *  이 튜토리얼에서는 가장 일반적으로 사용되는 방법을 다룬다.
+   *
+   *  이 자습서는 다음 사항을 잘 이해하고 있다고 가정한다.
+   *  1) JavaScript
+   *  2) DOM handling
+   *  3) OOP (클래스, 인스턴스, 상속, 메소드 및 프로퍼티와 같은 개념 이해)
+   *
+   *  [ Leaflet 아키텍처 ]
+   *  Leaflet 1.0.0의 단순화된 UML 클래스 다이어그램을 확인해보자.
+   *  60개 이상의 JavaScript 클래스가 있어서 다이어그램이 조금 크다.
+   *  (이미지)
+   *
+   *  기술적 관점에서 Leaflet은 다양한 방법으로 확장 할 수 있다.
+   *  * 가장 일반적인 방법: L.Class.extends()를 활용하여 L.Layer / L.Handler / L.Control 과 같은 서브클래스를 생성
+   *    - map이 이동/확대 될때 Layer가 이동함.
+   *    - Handler는 보이지 않으며 브라우저 이벤트를 해석한다.
+   *    - Control은 고정된 인터페이스 요소이다.
+   *  * L.Class.include() 를 이용하여 기존 클래스에 더 많은 기능을 추가
+   *    - 신규 methods 와 options 추가
+   *    - 특정 methods 변경
+   *    - addInitHook을 사용하여 새로운 (constructor)생성자 코드를 수행
+   *  * L.Class.include() 를 이용하여 기존 클래스의 일부를 변경 (클래스 메소드 작동방법 변경)
+   *
+   *  이 튜토리얼에서는 Leaflet 1.0.0에서만 사용할 수 있는 일부 클래스와 메소드를 다룬다.
+   *  이전 버전용 플러그인을 개발하는 경우 주의해야한다.
+   *
+   *  [ L.Class ]
+   *  JavaScript는 약간 이상한 언어인데, (Object-Oriented)객체지향 언어가 아니라 (Prototype-Oriented)프로토타입지향 언어이다.
+   *  때문에 OOP의미에서 클래스 상속을 사용하기가 어려웠다.
+   *
+   *  Leaflet은 L.Class를 중점적으로 사용하여 클래스 상속을 용이하게 한다.
+   *
+   *  최근 자바스크립트인 ES6는 클래스를 사용할 수 있지만 Leaflet은 이를 중심으로 설계되지 않았다.
+   *
+   *  [[ L.Class.extend() ]]
+   *  Leaflet에서 하위클래스를 만드려면 .extend() 메소드를 사용하면 된다.
+   *  .extend() 메소드에는 하나의 파라메터를 허용하는데 해당 파라메터는 key-value 쌍으로 되어있는 일반 Object 이다.
+   *  해당 Object의 key는 프로퍼티 또는 메소드의 이름이며, value는 프로퍼티값 또는 메소드의 구현체이다.
+   *  (아래의 코드 참고)
+   */
+  var MyDemoClass = L.Class.extend({
+    // A property with initial value = 42
+    myDemoProperty: 42,
+    // A method
+    myDemoMethod: function() { return this.myDemoProperty; }
+  });
+  var myDemoInstance = new MyDemoClass();
+  // This will output "42" to the development console
+  console.log( myDemoInstance.myDemoMethod() );
+  /**
+   * class, method, property 이름을 지정할 때 다음 규칙을 따르는게 좋다.
+   *  - lowerCamelCase 규칙: Function, method, property, factory 이름
+   *  - UpperCamelCase 규칙: Class 이름
+   *  - (접근지정자) private 형식의 property, method 는 밑줄(_)로 시작한다.
+   *    이건 private로 만들어 주는것은 아니지만 개발자들에게 직접 사용하지 말라고 권고하는 것이다.
+   *
+   *  [[ L.Class.include() ]]
+   *  클래스가 이미 정의된경우 .include()를 사용하여 기존 property/method 를 재정의 하거나, 새로운 property/method 를 추가할 수 있다.
+   *  (아래의 코드 참고)
+   */
+  MyDemoClass.include({
+    // Adding a new property to the class
+    _myPrivateProperty: 78,
+    // Redefining a method
+    myDemoMethod: function() { return this._myPrivateProperty; }
+  });
+  var mySecondDemoInstance = new MyDemoClass();
+  // This will output "78"
+  console.log( mySecondDemoInstance.myDemoMethod() );
+  // However, properties and methods from before still exist
+  // This will output "42"
+  console.log( mySecondDemoInstance.myDemoProperty );
+
+  /**
+   * [[ L.Class.initialize() ]]
+   * OOP에서 클래스에는 생성자 메소드가 있다.
+   * Leaflet 에서 L.Class 생성자 메소드는 항상 initialize 이다.
+   *
+   * 만약 클래스에 options를 기술한경우 생성자에서 L.setOptions()를 사용해 그것들을 초기화 하는게 좋다.
+   * 이 유틸리티 함수는 기술한 options를 클래스의 기본 options 와 병합한다.
+   * (아래의 코드 참고)
+   */
+  var MyBoxClass = L.Class.extend({
+    options: {
+      width: 1,
+      height: 1
+    },
+    initialize: function(name, options) {
+      this.name = name;
+      L.setOptions(this, options);
+    }
+  });
+  var instance = new MyBoxClass('Red', {width: 10});
+  console.log(instance.name); // Outputs "Red"
+  console.log(instance.options.width); // Outputs "10"
+  console.log(instance.options.height); // Outputs "1", the default
+  /**
+   * Leaflet은 특별한 방법으로 options 속성을 처리한다.
+   * 부모 클래스의 options는 자식 클래스에 상속된다.
+   */
+  var MyCubeClass = MyBoxClass.extend({
+    options: {
+      depth: 1
+    }
+  });
+  var instance = new MyCubeClass('Blue');
+  console.log(instance.options.width); // Outputs "1", parent class default
+  console.log(instance.options.height); // Outputs "1", parent class default
+  console.log(instance.options.depth); // Outputs "1"
+  /**
+   * 자식클래스가 부모의 생성자를 수행한다음 자신의 생성자를 수행하는게 일반적이다.
+   * 이를 위해서 Leaflet 에서는 L.Class.addInitHook() 을 사용할 수 있다.
+   * 이 메소드를 이용하여 클래스 initialize() 직후 실행되는 hook 초기화 함수로 사용할 수 있다.
+   */
+  MyBoxClass.addInitHook(function(){
+    this._area = this.options.width * this.options.length;
+  });
+  /**
+   * 위 코드는 setOptions()를 수행하는 initialize() 이후에 수행된다.
+   * 이 뜻은 init hook 이 실행될 때는 this.options 가 이미 생성되어 있다는 의미가 된다.
+   *
+   * addInitHook은 대체구문이 있으며, 메소드이름과 메소드에 전달할 인수를 채워주면 된다.
+   */
+  MyCubeClass.include({
+    _calculateVolume: function(arg1, arg2) {
+      this._volume = this.options.width * this.options.length * this.options.depth;
+    }
+  });
+  MyCubeClass.addInitHook('_calculateVolume', argValue1, argValue2);
+
+  /**
+   * [[ Methods of the parent class ]]
+   * 부모클래스의 메소드를 호출하는 방법은 부모클래스의 prototype에 도달하여 Function.call()을 사용하여 호출할 수 있다.
+   * 아래는 L.FeatureGroup의 코드에 대한 샘플이다.
+   */
+  L.FeatureGroup = L.LayerGroup.extend({
+    addLayer: function (layer) {
+    //…
+        L.LayerGroup.prototype.addLayer.call(this, layer);
+    },
+    removeLayer: function (layer) {
+    //…
+        L.LayerGroup.prototype.removeLayer.call(this, layer);
+    },
+    //…
+  });
+  /**
+   * 부모의 생성자를 호출하는것도 비슷하지만 다음과 같이 사용이 가능하다.
+   * ParentClass.prototype.initialize.call(this, …)
+   *
+   * [[ Factories ]]
+   * 대부분의 Leaflet 클래스는 factory 함수를 가지고 있다.
+   * factory 함수는 UpperCamelCase 형식의 클래스명 대신 lowerCamelCase의 클래스명을 사용한다.
+   */
+  function myBoxClass(name, options) {
+    return new MyBoxClass(name, options);
+  }
+
+  /**
+   * [[ 명명규칙 ]]
+   * Leaflet 플러그인의 클래스 이름을 지정할 때 다음의 명명규칙을 따라야 한다.
+   *  - 플러그인에서 전영변수를 노출시키지 않는다.
+   *  - 신규 클래스가 있는경우 L 네임스페이스에 직접 추가한다. (ex: L.MyPlugin)
+   *  - 기존 클래스 중에 하나를 상속하는 경우 하위속성으로 만든다. (ex: L.TileLayer.Banana)
+   */
+</script>
+</body>
+</html>
