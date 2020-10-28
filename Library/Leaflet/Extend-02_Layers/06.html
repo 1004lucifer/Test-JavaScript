@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+
+<script type="text/javascript">
+  /**
+   * 주의 - 이 코드는 작동하는 코드가 아닙니다.
+   *
+   * [ onAdd 와 onRemove ]
+   * 핵심은 모든 L.Layer는 (지도창)map pane 내부의 HTML 요소이며, 레이어의 코드에 정의된 (position/content)위치와 내용이다.
+   * 그러나 레이어가 인스턴스화 되면 HTML요소를 생성할 수 없다.
+   * 오히려, 레이어는 지도에 추가되고나서 수행되며, 레이어는 그때까지 map에 대해서 알지 못한다. (심지어 document까지도)
+   *
+   * 즉, map은 레이어의 onAdd() 메소드를 호출한 후 HTML요소인 레이어를 생성하여 (지도창)map pane에 추가한다.
+   * 반대로, 지도에서 레이어가 제거되면 onRemove() 메소드가 호출된다.
+   * 레이어는 map에 추가될 때 내용을 업데이트하고 map view가 업데이트 되면 위치를 변경해야한다.
+   * 레이어 뼈대는 다음과 같다.
+   *
+   * PS.
+   * 레이어의 HTML요소의 정확한 위치는 (객체를 만들때)레이어의 세부사항에 따라 다르지만,
+   * 이 소개는 Leaflet의 레이어코드를 읽고 새로운 레이어를 만드는데 도움이 될 것이다.
+   */
+  L.CustomLayer = L.Layer.extend({
+    onAdd: function(map) {
+      var pane = map.getPane(this.options.pane);
+      this._container = L.DomUtil.create(…);
+
+      pane.appendChild(this._container);
+
+      // Calculate initial position of container with `L.Map.latLngToLayerPoint()`, `getPixelOrigin()` and/or `getPixelBounds()`
+
+      L.DomUtil.setPosition(this._container, point);
+
+      // Add and position children elements if needed
+
+      map.on('zoomend viewreset', this._update, this);
+    },
+
+    onRemove: function(map) {
+      L.DomUtil.remove(this._container);
+      map.off('zoomend viewreset', this._update, this);
+    },
+
+    _update: function() {
+      // Recalculate position of container
+
+      L.DomUtil.setPosition(this._container, point);
+
+      // Add/remove/reposition children elements if needed
+    }
+  });
+</script>
+
+</body>
+</html>

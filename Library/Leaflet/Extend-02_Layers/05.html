@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Grid coordinates - Leaflet</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #map { width: 600px; height: 400px; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<style>
+  #info {
+    position:absolute;
+    top:0;
+    right:0;
+    width: 20em;
+    height: 7.5em;
+    background: rgba(255,255,255,.5);
+    z-index:500;
+    font: 12px Sans;
+  }
+  .crsMarker {
+    border-top: 2px green solid;
+    border-left: 2px green solid;
+  }
+</style>
+
+<div id="info" style=""></div>
+
+<script type="text/javascript">
+  /**
+   * [ (The pixel origin) 픽셀 원점 ]
+   * custom L.Layer를 만들 수 있지만, Leaflet이 HTML 요소를 배치하는 것에 대해서 더 깊은 지식이 필요하다.
+   * 요약은 아래와 같다.
+   *  - L.Map 에는 <div>인 (지도 창)'map panes'가 있다.
+   *  - L.Layer는 'map pane' 안에있는 HTML 요소이다.
+   *  - map은 모든 LatLng를 지도CRS의 좌표로 변환하고, 그다음 (absolute)절대 '픽셀 좌표'로 변환한다.
+   *    (CRS의 원점은 픽셀좌표의 원점과 같음)
+   *  - (중앙 LatLng와 줌레벨을 가지고 있는) L.map이 준비되면 왼쪽 상단의 절대픽셀좌표는 '픽셀원점'이 된다.
+   *  - 각 L.Layer는 'map pane'에서 픽셀원점과 레이어LatLng의 절대픽셀좌표에 따라 오프셋 된다.
+   *  - 픽셀원점은 각각 zoomend, viewreset 이벤트가 수행된 이후 리셋되며, (필요한 경우) 모든 L.Layer의 위치는 재계산된다.
+   *  - map을 주위로 이동 시키는경우 픽셀원점은 리셋되지 않으며, 모든 pane들의 위치가 변경된다.
+   *
+   * 위 설명은 조금 헷갈릴 수 있으니 다음 지도의 확인이 필요하다.
+   */
+
+  var trd = [63.41, 10.41];
+
+  var map = L.map('map', {
+    center: [40, 0],
+    zoom: 1
+  });
+
+  var positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>'
+  }).addTo(map);
+
+  var marker = L.marker(trd).addTo(map);
+
+  var pane = map.getPane('markerPane')
+
+  var paneCorner = document.createElement('div');
+  paneCorner.style.width = '12px';
+  paneCorner.style.height = '12px';
+  paneCorner.style.borderTop = '2px red solid';
+  paneCorner.style.borderLeft = '2px red solid';
+  pane.appendChild(paneCorner);
+
+  marker._icon.style.border = '1px solid blue';
+
+  var crsMarker = L.marker( map.unproject([0, 0]), {
+    icon: L.divIcon({
+      className: 'crsMarker',
+      iconAnchor: [0, 0]
+    })
+  } ).addTo(map);
+
+
+  var markerOffsetLine = L.polyline([[0, 0], [0, 0]], {color: 'skyblue'}).addTo(map);
+  var iconOffsetLine = L.polyline([[0, 0], [0, 0]], {color: 'blue'}).addTo(map);
+
+  function info() {
+
+    var pixelOrigin = map.getPixelOrigin();
+    var markerPixelCoords = map.project(trd, map.getZoom());
+    var markerAnchor = marker.options.icon.options.iconAnchor;
+    var markerOffset = marker._icon._leaflet_pos;
+
+    document.getElementById('info').innerHTML =
+      '<div style="color: green">CRS origin: 0,0</div>' +
+      '<div style="color: red">px origin: &Delta;' + pixelOrigin.x + ',' + pixelOrigin.y + '</div>' +
+      '<div style="color: blue">marker px coords:' + markerPixelCoords.x.toFixed(2) + ',' + markerPixelCoords.y.toFixed(2) + '</div>' +
+      '<div style="color: blue">marker anchor: &Delta;' + markerAnchor[0] + ',' + markerAnchor[1] + '</div>' +
+      '<div style="color: skyblue">marker pane offset: &Delta;' + markerOffset.x + ',' + markerOffset.y + '</div>';
+
+    markerOffsetLine.setLatLngs([ map.unproject(pixelOrigin), map.unproject(pixelOrigin.add(markerOffset))]);
+    iconOffsetLine.setLatLngs([ map.unproject(pixelOrigin.add(markerOffset)), map.unproject(pixelOrigin.add(markerOffset).subtract(markerAnchor))]);
+  }
+
+  map.on('load move moveend zoomend viewreset', info)
+
+  info();
+
+  /**
+   * (녹색) CRS원점은 LatLng와 동일하게 유지된다.
+   * (빨간색) 픽셀원점은 항상 왼쪽 상단 모서리에서 시작한다.
+   * 픽셀원점은 맵이 이동될 때 이리저리 이동하며, ((지도창)map pane이 지도 컨테이너에 따라 재배치됨)
+   * 확대/축소 할 시 화면의 동일한 위치에 남아있다. (map pane은 재배치되지 않지만 layer 자체는 다시 그릴 수 있다.)
+   * 픽셀원점에 대한 절대픽셀좌표는 확대/축소 할 때 업데이트 되지만 이동중에는 업데이트 되지 않는다.
+   * 지도를 확대할 때마다 (녹색 괄호까지의 거리)절대픽셀좌표가 두배가 되는 것을 볼 수 있다.
+   *
+   * (ex: blue L.Marker)무엇이든 배치하기위해 LatLng는 지도의 L.CRS 안에있는 절대픽셀좌표로 변환된다.
+   * 그 다음 픽셀원점의 절대픽셀좌표를 절대픽셀좌표에서 빼고 (연청색)픽셀원점에 대한 오프셋을 제공한다.
+   * 픽셀원점은 모든 (지도창)'map pane'의 왼쪽 상단 모서리에 있으므로 이 오프셋을 마커 아이콘의 HTML요소에 적용할 수 있다.
+   * (암청색 선)마커의 아이콘앵커는 negative CSS margin을 통해 이루어진다.
+   *
+   * L.Map.project() 와 L.Map.unproject() 메소드는 절대픽셀좌표에 의해 동작한다.
+   * 마찬가지로 L.Map.latLngToLayerPoint() 와 L.Map.layerPointToLatLng() 는 픽셀원점을 기준으로 오프셋으로 작업한다.
+   *
+   * 다른 레이어들은 이러한 계산을 다른 방식으로 적용한다.
+   * L.Marker 는 단순히 아이콘의 위치를 바꾸기만 하면 된다.
+   * L.GridLayer는 (절대픽셀좌표의)지도범위를 계산한 다음 요청할 타일좌표 리스트를 계산한다.
+   * (polyline, polygon, circle marker 등등)벡터레이어는 각 LatLng를 픽셀로 변환하고, SVG 또는 <canvas>를 사용하여 (기하학적 구조)지오메트리를 그린다.
+   */
+
+</script>
+</body>
+</html>

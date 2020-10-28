@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>KittenLayer - Leaflet</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #map { width: 600px; height: 400px; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script type="text/javascript">
+  var map = L.map('map', {
+    center: [0, 0],
+    zoom: 0
+  });
+
+  /**
+   * custom GridLayer를 사용하면 플러그인은 grid를 만들 때 HTML element를 완전히 컨트롤이 가능하다.
+   * 일부 플러그인들은 이미 <canvas>를 사용하여 고급 렌더링을 수행하고 있다.
+   * 기본적인 <canvas> GridLayer 사용은 다음과 같다.
+   */
+  L.GridLayer.DebugCoords = L.GridLayer.extend({
+    createTile: function (coords) {
+      var tile = document.createElement('canvas');
+
+      var tileSize = this.getTileSize();
+      tile.setAttribute('width', tileSize.x);
+      tile.setAttribute('height', tileSize.y);
+
+      var ctx = tile.getContext('2d');
+
+      // Draw whatever is needed in the canvas context
+      // For example, circles which get bigger as we zoom in
+      ctx.arc(tileSize.x/2, tileSize.x/2, 4 + coords.z*4, 0, 2*Math.PI, false);
+      ctx.fill();
+
+      return tile;
+    }
+  });
+
+  L.gridLayer.debugCoords = function(opts) {
+    return new L.GridLayer.DebugCoords(opts);
+  };
+
+  map.addLayer( L.gridLayer.debugCoords() );
+
+</script>
+</body>
+</html>

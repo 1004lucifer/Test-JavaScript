@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>KittenLayer - Leaflet</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #map { width: 600px; height: 400px; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script type="text/javascript">
+  var map = L.map('map', {
+    center: [0, 0],
+    zoom: 0
+  });
+
+  /**
+   * [ L.GridLayer 와 DOM elements ]
+   * 또 다른 확장방법은 L.GridLayer.createTile() 을 이용하는 것이다.
+   * L.TailLayer는 (<img> 요소로서) 이미지의 그리드가 있다고 가정하지만,
+   * L.GridLayer는 (모든 종류의 HTML Element요소의 그리드를 만들 수 있기에) 그렇게 가정하지 않는다
+   *
+   * L.GridLayer는 <img>태그의 요소를 생성 가능하지만, <div>/<canvas>/<picture> 등등 다른 모든것들을 생성할 수 있다.
+   * createTile()은 전달받은 타일좌표의 HTMLElement 인스턴스를 반환하기만 하면 된다.
+   * 이때, DOM 요소를 조작하는 방법을 아는것이 중요하다.
+   * (Leaflet은 HTML-Element의 인스턴스를 기대하고 있으며, jQuery와 같은 라이브러리의 요소들은 문제가 된다.)
+   *
+   * custom GridLayer의 예제는 <div>의 타일좌표를 보여주고 있다.
+   * 이는 특히 Leaflet 내부를 디버깅하거나 (tile coordinates)타일좌표가 어떻게 작동하는지 이해하는데 유용하다.
+   *
+   * element가 비동기 초기화를 해야 하는경우 두번째 함수 매개변수인 'done'을 사용하고
+   * (이미지과 완전히 로드된경우)준비되거나 에러가 발생한 경우 해당 함수를 호출한다.
+   */
+  L.GridLayer.DebugCoords = L.GridLayer.extend({
+    // createTile: function (coords) { // 일반적인경우
+    //   var tile = document.createElement('div');
+    //   tile.innerHTML = [coords.x, coords.y, coords.z].join(', ');
+    //   tile.style.outline = '1px solid red';
+    //   return tile;
+    // }
+    createTile: function (coords, done) { // element 비동기 초기화가 필요한경우
+      var tile = document.createElement('div');
+      tile.innerHTML = [coords.x, coords.y, coords.z].join(', ');
+      tile.style.outline = '1px solid red';
+      setTimeout(function () {
+        done(null, tile);	// Syntax is 'done(error, tile)'
+      }, 500 + Math.random() * 1500);
+      return tile;
+    }
+  });
+
+  L.gridLayer.debugCoords = function(opts) {
+    return new L.GridLayer.DebugCoords(opts);
+  };
+
+  map.addLayer( L.gridLayer.debugCoords() );
+
+</script>
+</body>
+</html>
