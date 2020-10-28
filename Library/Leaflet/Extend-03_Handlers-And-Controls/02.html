@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Watermark control - Leaflet</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #map { width: 600px; height: 400px; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script type="text/javascript">
+  /**
+   * [ Controls ]
+   * 왼쪽상단 zoom컨트롤, 왼쪽하단 축척, 오른쪽상단 레이어변경 기능에 대해서 지금까지 봐왔을 것이다.
+   * 그것들의 중심에는 Map컨테이너 고정위치에 있는 HTML요소인 L.Control이 있다.
+   *
+   * control을 만드려면 L.Control을 상속받고 onAdd(), onRemove() 메소드를 구현하면 된다.
+   * onAdd()메소드가 control에 해당하는 HTML요소의 인스턴스를 반환하는 것을 제외하면 두개의 메소드는 L.Layer와 비슷하게 작동한다.
+   * (control이 map에 추가되거나 제거될 때 수행한다)
+   * Map에 HTML요소의 추가/제거는 자동으로 이루어 진다.
+   *
+   * 만약 custom control에 (HTML)요소에 클릭버튼과 같은 인터랙티브한 기능이 있다면
+   * onAdd()메소드안에 L.DomEvent.on()을 사용하고, onRemove()메소드안에 L.DomEvent.off()를 사용해라.
+   *
+   * 만약 custom control에 (두개의 버튼이 있는 L.Control.Zoom과 같이)HTML요소가 두개이상 있다면
+   * 모든 계층구조의 (HTML)요소를 만들고 제일 상위 컨테이너를 반환하면 된다.
+   * (<div><p></p><span></span></div> 같은경우 div 요소를 반환)
+   */
+
+  var map = L.map('map', {
+    center: [40, 0],
+    zoom: 1
+  });
+
+  var positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>'
+  }).addTo(map);
+
+  L.Control.Watermark = L.Control.extend({
+    onAdd: function(map) {
+      var img = L.DomUtil.create('img');
+
+      img.src = 'logo.png';
+      img.style.width = '200px';
+
+      return img;
+    },
+
+    onRemove: function(map) {
+      // Nothing to do here
+    }
+  });
+
+  L.control.watermark = function(opts) {
+    return new L.Control.Watermark(opts);
+  }
+
+  L.control.watermark({ position: 'bottomleft' }).addTo(map);
+
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tilt handler - Leaflet</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    #map { width: 600px; height: 400px; }
+  </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<style>
+  #info {
+    position:absolute;
+    top:0;
+    right:0;
+    width: 20em;
+    height: 7.5em;
+    background: rgba(255,255,255,.5);
+    z-index:500;
+    font: 12px Sans;
+  }
+</style>
+
+<div id="info" style=""></div>
+
+<script type="text/javascript">
+  /**
+   * [ 설명 ]
+   * 이 튜토리얼은 Leaflet의 Class 상속이론을 읽었다고 가정한다.
+   *
+   * Leaflet에서 Map의 움직이는 모든것은 Layer로 되어있다.
+   * Control은 (Map컨테이너에 상대적인) 정적인 상태를 유지하는 HTML요소이다.
+   * Handler는 Map의 동작을 변경하는 보이지 않는 코드의 일부이다.
+   *
+   * [ Handlers ]
+   * Map Handler는 Leaflet 1.0의 새로운 개념으로,
+   * 브라우저에서 (클릭, 더블클릭, 마우스휠 같은)DOM 이벤트를 처리하고 Map 상태를 변경하는 기능이다.
+   *
+   * Handler는 상대적으로 간단하다.
+   * Map에서 핸들러가 활성화 될때 수행할 addHooks()메소드와 핸들러가 비활성화 될때 수행할 removeHooks() 메소만 있으면 된다.
+   * 핸들러의 골격은 다음과 같다.
+   * L.CustomHandler = L.Handler.extend({
+   *     addHooks: function() {
+   *         L.DomEvent.on(document, 'eventname', this._doSomething, this);
+   *     },
+   *
+   *     removeHooks: function() {
+   *         L.DomEvent.off(document, 'eventname', this._doSomething, this);
+   *     },
+   *
+   *     _doSomething: function(event) { … }
+   * });
+   *
+   * deviceorientation event를 통해 모바일기기가 기울어졌을 때 지도를 이동하는 간단한 핸들러를 보여줄 수 있다.
+   * (현재 예제소스)
+   *
+   * 핸들러는 map.addHandler('tilt', L.TiltHandler) 를 이용하여 지도에 연결시킬 수 있다.
+   * 위 코드는 L.TiltHandler의 인스턴스를 map.tilt로 저장할 것이다.
+   * 하지만 addInitHook 문법을 사용하여 모든 Map에 핸들러를 연결시키는게 일반적이다.
+   *
+   * L.Map.addInitHook('addHandler', 'tilt', L.TiltHandler);
+   *
+   * 이제 핸들러는 map.tilt.enable()이 수행되면 활성화되며, map.tilt.disable()이 수행되면 비활성화 된다.
+   *
+   * 또한 map에 핸들러와 동일한 이름의 속성이 있는경우 해당 옵션을 true로 설정하면 기본적으로 핸들러가 활성화 된다.
+   *
+   * var map = L.map('mapDiv', { tilt: true });
+   *
+   * 이 예제소스를 확인하려면 deviceorientation event를 지원하는 모바일 브라우저가 필요하다.
+   * (테스트 시 완벽하지 않고 불안정하니 감안해야 한다.)
+   *
+   * 이벤트 유형에 따라 다르지만, Map핸들러는 이벤트리스너를 document, window, L.Map의 컨테이너에 붙일 수 있다.
+   */
+
+  /**
+   * 핸들러 생성
+   */
+  L.TiltHandler = L.Handler.extend({
+    addHooks: function() {
+      L.DomEvent.on(window, 'deviceorientation', this._tilt, this);
+    },
+
+    removeHooks: function() {
+      L.DomEvent.off(window, 'deviceorientation', this._tilt, this);
+    },
+
+    /**
+     * (info)Div에 모바일기기의 기울어짐 정도를 수치로 보여준다.
+     */
+    _tilt: function(ev) {
+      // Treat Gamma angle as horizontal pan (1 degree = 1 pixel) and Beta angle as vertical pan
+      var info;
+      var offset = L.point(ev.gamma, ev.beta)
+      if (offset) {
+        this._map.panBy(offset);
+        info = ev.gamma + ',' + ev.beta;
+      } else {
+        info = 'Device orientation not detected'
+      }
+      document.getElementById('info').innerHTML = info
+    }
+  });
+
+  /**
+   * L.Map.addInitHook 을 통해 Map 클래스가 생성될 때
+   * (각각)해당 Map에 addHandler 메소드를 이용해 L.TiltHandler 핸들러는 tilt 라는 이름으로 등록한다.
+   * https://leafletjs.com/reference-1.7.1.html#class-addinithook
+   * https://leafletjs.com/reference-1.7.1.html#map-addhandler
+   */
+  L.Map.addInitHook('addHandler', 'tilt', L.TiltHandler);
+
+  var map = L.map('map', {
+    center: [0, 0],
+    zoom: 1,
+    tilt: true
+  });
+
+  var positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>'
+  }).addTo(map);
+
+</script>
+</body>
+</html>
