@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Outer Page 02</h1>
+
+<button onclick="goBackOuter01();">history back - Outer Page 01</button>
+<br />
+<br />
+
+current History Length: <span id="curHistoryLength"></span>
+<br />
+<br />
+
+<iframe src="innerPage01.html" width="100%" height="200px"></iframe>
+
+
+<script>
+    var prevHistoryLength = window.history.length - 1;
+    function goBackOuter01 () {
+        console.log('window.history.length - prevHistoryLength: ', window.history.length - prevHistoryLength);
+        window.history.go(-(window.history.length - prevHistoryLength));
+    }
+    setInterval(function() {
+        document.getElementById('curHistoryLength').innerText = window.history.length;
+    }, 200);
+</script>
+
+</body>
+</html>
