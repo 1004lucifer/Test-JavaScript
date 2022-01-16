@@ -1,5 +1,4 @@
 import React, {forwardRef, useImperativeHandle, useState} from 'react';
-import logo from './logo.svg';
 import './App.css';
 import {connect} from "react-redux";
 
@@ -40,6 +39,7 @@ const mapDispatchToProps = {
 type StateProps = ReturnType<typeof mapStateToProps>;
 type DispatchProps = typeof mapDispatchToProps;
 
+// connect 에 옵션을 추가로 전달해야 한다.
 export default connect(
   mapStateToProps, mapDispatchToProps,
   null,
